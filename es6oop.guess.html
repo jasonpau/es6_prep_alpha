@@ -13,45 +13,51 @@
   <button id="submit">guess!</button>
 </body>
   <script defer>
-  class View{
-  	constructor(submitHandler){
+  function View(submitHandler, controller) {
+  	this.init = function() {
   		this.button = $("#submit");
   		this.input = $("#num");
   		this.display = $("#result");
   		this.submitHandler = submitHandler;
-  		this.button.on('click',()=>{
-  			this.submitGuess();
+  		this.button.on('click', function() {
+  			controller.view.submitGuess();
   		});
-  	}
-  	submitGuess(){
-  		let chosenNumber = parseInt(this.input.val());
+  	};
+  	this.submitGuess = function(){
+  		var chosenNumber = parseInt(this.input.val());
   		console.log(chosenNumber + ' in submit guess');
   		this.submitHandler(chosenNumber);
-  	}
-  	displayResult(message){
+  	};
+  	this.displayResult = function(message) {
   		this.display.text(message);
-  	}
+  	};
+  	this.init();
+  }
 
-  }
-  class Model{
-  	constructor(){
+  function Model() {
+  	this.init = function() {
   		this.secretNumber = Math.floor(Math.random()*10)+1;
-  	}
-  	getNumber(){
+  	};
+  	this.getNumber = function(){
   		return this.secretNumber;
-  	}
+  	};
+  	this.init();
   }
-  class App{
-  	constructor(){
+
+  function App() {
+    var controller = this;
+  	this.init = function() {
   		this.model = new Model();
-  		this.view = new View((number)=>this.handleSubmit(number));
-  	}
-  	handleSubmit(chosenNumber){
-  		let secretNumber = this.model.getNumber();
-  		let text = '';
+  		this.view = new View(function(number) {
+  		    return controller.handleSubmit(number)
+        }, this);
+  	};
+  	this.handleSubmit = function(chosenNumber) {
+  		var secretNumber = this.model.getNumber();
+  		var text = '';
   		console.log(secretNumber, chosenNumber);
 	    if(chosenNumber === secretNumber){
-	      text = 'You got it, the number was ${secretNumber}!';
+	      text = 'You got it, the number was ' + secretNumber;
 	    } else if(chosenNumber > secretNumber){
 	      text = 'Too high!';
 	    } else if(chosenNumber < secretNumber){
@@ -60,10 +66,12 @@
 	      text = 'Invalid input!';
 	    }
 	    this.view.displayResult(text);
-  	}
+  	};
+  	this.init();
   }
 
   var guessingGame = new App();
+
   	
   </script>
 </html>
